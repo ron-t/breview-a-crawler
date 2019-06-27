@@ -1,0 +1,539 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="AmazonCrawlerModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityType Name="Author">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="500" />
+          <Property Name="detailPageURL" Type="varchar" MaxLength="1000" />
+        </EntityType>
+        <EntityType Name="Book">
+          <Key>
+            <PropertyRef Name="ISBN" />
+          </Key>
+          <Property Name="ISBN" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="title" Type="varchar" MaxLength="256" />
+          <Property Name="authorId" Type="varchar" MaxLength="50" />
+          <Property Name="language" Type="varchar" MaxLength="128" />
+          <Property Name="statsCollectedAt" Type="datetime" />
+          <Property Name="avgCustomerReview" Type="decimal" Precision="3" Scale="2" />
+          <Property Name="numFiveStarRatings" Type="int" />
+          <Property Name="numFourStarRatings" Type="int" />
+          <Property Name="numThreeStarRatings" Type="int" />
+          <Property Name="numTwoStarRatings" Type="int" />
+          <Property Name="numOneStarRatings" Type="int" />
+          <Property Name="salesRank" Type="int" />
+          <Property Name="pages" Type="int" />
+          <Property Name="publisher" Type="varchar" MaxLength="1000" />
+          <Property Name="publicationDate" Type="date" />
+          <Property Name="readingLevel" Type="varchar" MaxLength="500" />
+          <Property Name="fmtKindle" Type="bit" />
+          <Property Name="fmtHardcover" Type="bit" />
+          <Property Name="fmtPaperback" Type="bit" />
+          <Property Name="fmtAudio" Type="bit" />
+          <Property Name="fmtUnknownBinding" Type="bit" />
+          <Property Name="detailPageURL" Type="varchar" MaxLength="2000" />
+          <Property Name="reviewPageURL" Type="varchar" MaxLength="2000" />
+        </EntityType>
+        <EntityType Name="Ranking">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ISBN" Type="nchar" MaxLength="10" />
+          <Property Name="authorId" Type="varchar" MaxLength="50" />
+          <Property Name="rankString" Type="varchar" MaxLength="2000" />
+          <Property Name="statsCollectedAt" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Review">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="ISBN" Type="nchar" MaxLength="10" />
+          <Property Name="reviewerId" Type="varchar" MaxLength="128" />
+          <Property Name="reviewerName" Type="varchar" MaxLength="256" />
+          <Property Name="publishedDate" Type="date" />
+          <Property Name="starRating" Type="smallint" />
+          <Property Name="reviewTitle" Type="varchar" MaxLength="1000" />
+          <Property Name="reviewContent" Type="varchar(max)" />
+          <Property Name="numHelpful" Type="int" />
+          <Property Name="numTotal" Type="int" />
+          <Property Name="numComments" Type="int" />
+          <Property Name="reviewFor" Type="varchar" MaxLength="1000" />
+          <Property Name="reviewType" Type="char" MaxLength="1" />
+          <Property Name="statsCollectedAt" Type="datetime" />
+          <Property Name="isAmazonVerifiedPurchase" Type="bit" />
+          <Property Name="format" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="Reviewer">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="varchar" MaxLength="128" Nullable="false" />
+          <Property Name="reviewerName" Type="varchar" MaxLength="256" />
+          <Property Name="profileURL" Type="varchar" MaxLength="2000" />
+        </EntityType>
+        <EntityType Name="ReviewerBadge">
+          <Key>
+            <PropertyRef Name="reviewerId" />
+            <PropertyRef Name="badge" />
+            <PropertyRef Name="statsCollectedAt" />
+          </Key>
+          <Property Name="reviewerId" Type="varchar" MaxLength="128" Nullable="false" />
+          <Property Name="badge" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="statsCollectedAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Book_Author">
+          <End Role="Author" Type="Self.Author" Multiplicity="0..1" />
+          <End Role="Book" Type="Self.Book" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Author">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Book">
+              <PropertyRef Name="authorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ranking_Author">
+          <End Role="Author" Type="Self.Author" Multiplicity="0..1" />
+          <End Role="Ranking" Type="Self.Ranking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Author">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Ranking">
+              <PropertyRef Name="authorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ranking_Book">
+          <End Role="Book" Type="Self.Book" Multiplicity="0..1" />
+          <End Role="Ranking" Type="Self.Ranking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Book">
+              <PropertyRef Name="ISBN" />
+            </Principal>
+            <Dependent Role="Ranking">
+              <PropertyRef Name="ISBN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Review_Book">
+          <End Role="Book" Type="Self.Book" Multiplicity="0..1" />
+          <End Role="Review" Type="Self.Review" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Book">
+              <PropertyRef Name="ISBN" />
+            </Principal>
+            <Dependent Role="Review">
+              <PropertyRef Name="ISBN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Review_Reviewer">
+          <End Role="Reviewer" Type="Self.Reviewer" Multiplicity="0..1" />
+          <End Role="Review" Type="Self.Review" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Reviewer">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Review">
+              <PropertyRef Name="reviewerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ReviewerBadge_Reviewer">
+          <End Role="Reviewer" Type="Self.Reviewer" Multiplicity="1" />
+          <End Role="ReviewerBadge" Type="Self.ReviewerBadge" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Reviewer">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ReviewerBadge">
+              <PropertyRef Name="reviewerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="AmazonCrawlerModelStoreContainer">
+          <EntitySet Name="Author" EntityType="Self.Author" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Book" EntityType="Self.Book" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Ranking" EntityType="Self.Ranking" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Review" EntityType="Self.Review" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Reviewer" EntityType="Self.Reviewer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ReviewerBadge" EntityType="Self.ReviewerBadge" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Book_Author" Association="Self.FK_Book_Author">
+            <End Role="Author" EntitySet="Author" />
+            <End Role="Book" EntitySet="Book" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ranking_Author" Association="Self.FK_Ranking_Author">
+            <End Role="Author" EntitySet="Author" />
+            <End Role="Ranking" EntitySet="Ranking" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ranking_Book" Association="Self.FK_Ranking_Book">
+            <End Role="Book" EntitySet="Book" />
+            <End Role="Ranking" EntitySet="Ranking" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Review_Book" Association="Self.FK_Review_Book">
+            <End Role="Book" EntitySet="Book" />
+            <End Role="Review" EntitySet="Review" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Review_Reviewer" Association="Self.FK_Review_Reviewer">
+            <End Role="Reviewer" EntitySet="Reviewer" />
+            <End Role="Review" EntitySet="Review" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReviewerBadge_Reviewer" Association="Self.FK_ReviewerBadge_Reviewer">
+            <End Role="Reviewer" EntitySet="Reviewer" />
+            <End Role="ReviewerBadge" EntitySet="ReviewerBadge" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="AmazonCrawlerModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="AmazonCrawlerEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Authors" EntityType="AmazonCrawlerModel.Author" />
+          <EntitySet Name="Books" EntityType="AmazonCrawlerModel.Book" />
+          <EntitySet Name="Rankings" EntityType="AmazonCrawlerModel.Ranking" />
+          <EntitySet Name="Reviews" EntityType="AmazonCrawlerModel.Review" />
+          <AssociationSet Name="FK_Book_Author" Association="AmazonCrawlerModel.FK_Book_Author">
+            <End Role="Author" EntitySet="Authors" />
+            <End Role="Book" EntitySet="Books" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ranking_Author" Association="AmazonCrawlerModel.FK_Ranking_Author">
+            <End Role="Author" EntitySet="Authors" />
+            <End Role="Ranking" EntitySet="Rankings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ranking_Book" Association="AmazonCrawlerModel.FK_Ranking_Book">
+            <End Role="Book" EntitySet="Books" />
+            <End Role="Ranking" EntitySet="Rankings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Review_Book" Association="AmazonCrawlerModel.FK_Review_Book">
+            <End Role="Book" EntitySet="Books" />
+            <End Role="Review" EntitySet="Reviews" />
+          </AssociationSet>
+          <EntitySet Name="Reviewers" EntityType="AmazonCrawlerModel.Reviewer" />
+          <EntitySet Name="ReviewerBadges" EntityType="AmazonCrawlerModel.ReviewerBadge" />
+          <AssociationSet Name="FK_Review_Reviewer" Association="AmazonCrawlerModel.FK_Review_Reviewer">
+            <End Role="Reviewer" EntitySet="Reviewers" />
+            <End Role="Review" EntitySet="Reviews" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReviewerBadge_Reviewer" Association="AmazonCrawlerModel.FK_ReviewerBadge_Reviewer">
+            <End Role="Reviewer" EntitySet="Reviewers" />
+            <End Role="ReviewerBadge" EntitySet="ReviewerBadges" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Author">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="name" Type="String" MaxLength="500" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="Books" Relationship="AmazonCrawlerModel.FK_Book_Author" FromRole="Author" ToRole="Book" />
+          <NavigationProperty Name="Rankings" Relationship="AmazonCrawlerModel.FK_Ranking_Author" FromRole="Author" ToRole="Ranking" />
+          <Property Type="String" Name="detailPageURL" MaxLength="1000" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Book">
+          <Key>
+            <PropertyRef Name="ISBN" />
+          </Key>
+          <Property Name="ISBN" Type="String" Nullable="false" MaxLength="10" Unicode="true" FixedLength="true" />
+          <Property Name="title" Type="String" MaxLength="256" Unicode="false" FixedLength="false" />
+          <Property Name="authorId" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="language" Type="String" MaxLength="128" Unicode="false" FixedLength="false" />
+          <Property Name="statsCollectedAt" Type="DateTime" Precision="3" />
+          <Property Name="avgCustomerReview" Type="Decimal" Precision="3" Scale="2" />
+          <Property Name="numFiveStarRatings" Type="Int32" />
+          <Property Name="numFourStarRatings" Type="Int32" />
+          <Property Name="numThreeStarRatings" Type="Int32" />
+          <Property Name="numTwoStarRatings" Type="Int32" />
+          <Property Name="numOneStarRatings" Type="Int32" />
+          <Property Name="salesRank" Type="Int32" />
+          <Property Name="pages" Type="Int32" />
+          <Property Name="publisher" Type="String" MaxLength="1000" Unicode="false" FixedLength="false" />
+          <Property Name="publicationDate" Type="DateTime" Precision="0" />
+          <Property Name="readingLevel" Type="String" MaxLength="500" Unicode="false" FixedLength="false" />
+          <Property Name="fmtKindle" Type="Boolean" />
+          <Property Name="fmtHardcover" Type="Boolean" />
+          <Property Name="fmtPaperback" Type="Boolean" />
+          <Property Name="fmtAudio" Type="Boolean" />
+          <Property Name="fmtUnknownBinding" Type="Boolean" />
+          <Property Name="detailPageURL" Type="String" MaxLength="2000" Unicode="false" FixedLength="false" />
+          <Property Name="reviewPageURL" Type="String" MaxLength="2000" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="Author" Relationship="AmazonCrawlerModel.FK_Book_Author" FromRole="Book" ToRole="Author" />
+          <NavigationProperty Name="Rankings" Relationship="AmazonCrawlerModel.FK_Ranking_Book" FromRole="Book" ToRole="Ranking" />
+          <NavigationProperty Name="Reviews" Relationship="AmazonCrawlerModel.FK_Review_Book" FromRole="Book" ToRole="Review" />
+        </EntityType>
+        <EntityType Name="Ranking">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="ISBN" Type="String" MaxLength="10" Unicode="true" FixedLength="true" />
+          <Property Name="authorId" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="statsCollectedAt" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Author" Relationship="AmazonCrawlerModel.FK_Ranking_Author" FromRole="Ranking" ToRole="Author" />
+          <NavigationProperty Name="Book" Relationship="AmazonCrawlerModel.FK_Ranking_Book" FromRole="Ranking" ToRole="Book" />
+          <Property Type="String" Name="rankString" MaxLength="2000" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Review">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="String" Nullable="false" MaxLength="20" Unicode="false" FixedLength="false" />
+          <Property Name="ISBN" Type="String" MaxLength="10" Unicode="true" FixedLength="true" />
+          <Property Name="reviewerId" Type="String" MaxLength="128" Unicode="false" FixedLength="false" />
+          <Property Name="reviewerName" Type="String" MaxLength="256" Unicode="false" FixedLength="false" />
+          <Property Name="publishedDate" Type="DateTime" Precision="0" />
+          <Property Name="starRating" Type="Int16" />
+          <Property Name="reviewTitle" Type="String" MaxLength="1000" Unicode="false" FixedLength="false" />
+          <Property Name="reviewContent" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="numHelpful" Type="Int32" />
+          <Property Name="numTotal" Type="Int32" />
+          <Property Name="numComments" Type="Int32" />
+          <Property Name="reviewFor" Type="String" MaxLength="1000" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="Book" Relationship="AmazonCrawlerModel.FK_Review_Book" FromRole="Review" ToRole="Book" />
+          <Property Type="String" Name="reviewType" MaxLength="1" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="Reviewer" Relationship="AmazonCrawlerModel.FK_Review_Reviewer" FromRole="Review" ToRole="Reviewer" />
+          <Property Type="DateTime" Name="statsCollectedAt" Precision="3" />
+          <Property Type="Boolean" Name="isAmazonVerifiedPurchase" />
+          <Property Name="format" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="FK_Book_Author">
+          <End Role="Author" Type="AmazonCrawlerModel.Author" Multiplicity="0..1" />
+          <End Role="Book" Type="AmazonCrawlerModel.Book" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Author">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Book">
+              <PropertyRef Name="authorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ranking_Author">
+          <End Role="Author" Type="AmazonCrawlerModel.Author" Multiplicity="0..1" />
+          <End Role="Ranking" Type="AmazonCrawlerModel.Ranking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Author">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Ranking">
+              <PropertyRef Name="authorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ranking_Book">
+          <End Role="Book" Type="AmazonCrawlerModel.Book" Multiplicity="0..1" />
+          <End Role="Ranking" Type="AmazonCrawlerModel.Ranking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Book">
+              <PropertyRef Name="ISBN" />
+            </Principal>
+            <Dependent Role="Ranking">
+              <PropertyRef Name="ISBN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Review_Book">
+          <End Role="Book" Type="AmazonCrawlerModel.Book" Multiplicity="0..1" />
+          <End Role="Review" Type="AmazonCrawlerModel.Review" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Book">
+              <PropertyRef Name="ISBN" />
+            </Principal>
+            <Dependent Role="Review">
+              <PropertyRef Name="ISBN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Reviewer">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="String" Name="id" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="reviewerName" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="profileURL" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Reviews" Relationship="AmazonCrawlerModel.FK_Review_Reviewer" FromRole="Reviewer" ToRole="Review" />
+          <NavigationProperty Name="ReviewerBadges" Relationship="AmazonCrawlerModel.FK_ReviewerBadge_Reviewer" FromRole="Reviewer" ToRole="ReviewerBadge" />
+        </EntityType>
+        <EntityType Name="ReviewerBadge">
+          <Key>
+            <PropertyRef Name="reviewerId" />
+            <PropertyRef Name="badge" />
+            <PropertyRef Name="statsCollectedAt" />
+          </Key>
+          <Property Type="String" Name="reviewerId" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="badge" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Reviewer" Relationship="AmazonCrawlerModel.FK_ReviewerBadge_Reviewer" FromRole="ReviewerBadge" ToRole="Reviewer" />
+          <Property Type="DateTime" Name="statsCollectedAt" Nullable="false" Precision="3" />
+        </EntityType>
+        <Association Name="FK_Review_Reviewer">
+          <End Type="AmazonCrawlerModel.Reviewer" Role="Reviewer" Multiplicity="0..1" />
+          <End Type="AmazonCrawlerModel.Review" Role="Review" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Reviewer">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Review">
+              <PropertyRef Name="reviewerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ReviewerBadge_Reviewer">
+          <End Type="AmazonCrawlerModel.Reviewer" Role="Reviewer" Multiplicity="1" />
+          <End Type="AmazonCrawlerModel.ReviewerBadge" Role="ReviewerBadge" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Reviewer">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ReviewerBadge">
+              <PropertyRef Name="reviewerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="AmazonCrawlerModelStoreContainer" CdmEntityContainer="AmazonCrawlerEntities">
+          <EntitySetMapping Name="Authors"><EntityTypeMapping TypeName="AmazonCrawlerModel.Author"><MappingFragment StoreEntitySet="Author">
+            <ScalarProperty Name="detailPageURL" ColumnName="detailPageURL" />
+                <ScalarProperty Name="id" ColumnName="id" />
+            <ScalarProperty Name="name" ColumnName="name" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="Books"><EntityTypeMapping TypeName="AmazonCrawlerModel.Book"><MappingFragment StoreEntitySet="Book">
+            <ScalarProperty Name="ISBN" ColumnName="ISBN" />
+            <ScalarProperty Name="title" ColumnName="title" />
+            <ScalarProperty Name="authorId" ColumnName="authorId" />
+            <ScalarProperty Name="language" ColumnName="language" />
+            <ScalarProperty Name="statsCollectedAt" ColumnName="statsCollectedAt" />
+            <ScalarProperty Name="avgCustomerReview" ColumnName="avgCustomerReview" />
+            <ScalarProperty Name="numFiveStarRatings" ColumnName="numFiveStarRatings" />
+            <ScalarProperty Name="numFourStarRatings" ColumnName="numFourStarRatings" />
+            <ScalarProperty Name="numThreeStarRatings" ColumnName="numThreeStarRatings" />
+            <ScalarProperty Name="numTwoStarRatings" ColumnName="numTwoStarRatings" />
+            <ScalarProperty Name="numOneStarRatings" ColumnName="numOneStarRatings" />
+            <ScalarProperty Name="salesRank" ColumnName="salesRank" />
+            <ScalarProperty Name="pages" ColumnName="pages" />
+            <ScalarProperty Name="publisher" ColumnName="publisher" />
+            <ScalarProperty Name="publicationDate" ColumnName="publicationDate" />
+            <ScalarProperty Name="readingLevel" ColumnName="readingLevel" />
+            <ScalarProperty Name="fmtKindle" ColumnName="fmtKindle" />
+            <ScalarProperty Name="fmtHardcover" ColumnName="fmtHardcover" />
+            <ScalarProperty Name="fmtPaperback" ColumnName="fmtPaperback" />
+            <ScalarProperty Name="fmtAudio" ColumnName="fmtAudio" />
+            <ScalarProperty Name="fmtUnknownBinding" ColumnName="fmtUnknownBinding" />
+            <ScalarProperty Name="detailPageURL" ColumnName="detailPageURL" />
+            <ScalarProperty Name="reviewPageURL" ColumnName="reviewPageURL" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="Rankings"><EntityTypeMapping TypeName="AmazonCrawlerModel.Ranking"><MappingFragment StoreEntitySet="Ranking">
+            <ScalarProperty Name="rankString" ColumnName="rankString" />
+                <ScalarProperty Name="id" ColumnName="id" />
+            <ScalarProperty Name="ISBN" ColumnName="ISBN" />
+            <ScalarProperty Name="authorId" ColumnName="authorId" />
+            <ScalarProperty Name="statsCollectedAt" ColumnName="statsCollectedAt" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="Reviews"><EntityTypeMapping TypeName="AmazonCrawlerModel.Review"><MappingFragment StoreEntitySet="Review">
+            <ScalarProperty Name="format" ColumnName="format" />
+                <ScalarProperty Name="isAmazonVerifiedPurchase" ColumnName="isAmazonVerifiedPurchase" />
+                <ScalarProperty Name="statsCollectedAt" ColumnName="statsCollectedAt" />
+                <ScalarProperty Name="reviewType" ColumnName="reviewType" />
+                <ScalarProperty Name="id" ColumnName="id" />
+            <ScalarProperty Name="ISBN" ColumnName="ISBN" />
+            <ScalarProperty Name="reviewerId" ColumnName="reviewerId" />
+            <ScalarProperty Name="reviewerName" ColumnName="reviewerName" />
+            <ScalarProperty Name="publishedDate" ColumnName="publishedDate" />
+            <ScalarProperty Name="starRating" ColumnName="starRating" />
+            <ScalarProperty Name="reviewTitle" ColumnName="reviewTitle" />
+            <ScalarProperty Name="reviewContent" ColumnName="reviewContent" />
+            <ScalarProperty Name="numHelpful" ColumnName="numHelpful" />
+            <ScalarProperty Name="numTotal" ColumnName="numTotal" />
+            <ScalarProperty Name="numComments" ColumnName="numComments" />
+            <ScalarProperty Name="reviewFor" ColumnName="reviewFor" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="Reviewers">
+            <EntityTypeMapping TypeName="AmazonCrawlerModel.Reviewer">
+              <MappingFragment StoreEntitySet="Reviewer">
+                <ScalarProperty Name="profileURL" ColumnName="profileURL" />
+                <ScalarProperty Name="reviewerName" ColumnName="reviewerName" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReviewerBadges">
+            <EntityTypeMapping TypeName="AmazonCrawlerModel.ReviewerBadge">
+              <MappingFragment StoreEntitySet="ReviewerBadge">
+                <ScalarProperty Name="statsCollectedAt" ColumnName="statsCollectedAt" />
+                <ScalarProperty Name="badge" ColumnName="badge" />
+                <ScalarProperty Name="reviewerId" ColumnName="reviewerId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="UseLegacyProvider" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Default" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="AmazonModel">
+        <EntityTypeShape EntityType="AmazonCrawlerModel.Author" Width="1.5" PointX="3.125" PointY="1.5" Height="1.592306315104167" IsExpanded="true" />
+        <EntityTypeShape EntityType="AmazonCrawlerModel.Book" Width="1.5" PointX="0.75" PointY="3.25" Height="5.2079475911458317" IsExpanded="true" />
+        <EntityTypeShape EntityType="AmazonCrawlerModel.Ranking" Width="1.5" PointX="5.25" PointY="2.75" Height="2.0853483072916656" IsExpanded="true" />
+        <EntityTypeShape EntityType="AmazonCrawlerModel.Review" Width="1.5" PointX="5.25" PointY="5.625" Height="3.0714322916666665" IsExpanded="true" />
+        <AssociationConnector Association="AmazonCrawlerModel.FK_Book_Author" ManuallyRouted="false">
+          <ConnectorPoint PointX="3.125" PointY="2.2961531575520837" />
+          <ConnectorPoint PointX="1.5" PointY="2.2961531575520837" />
+          <ConnectorPoint PointX="1.5" PointY="3.25" />
+        </AssociationConnector>
+        <AssociationConnector Association="AmazonCrawlerModel.FK_Ranking_Author" ManuallyRouted="false">
+          <ConnectorPoint PointX="4.625" PointY="3.0033268229166667" />
+          <ConnectorPoint PointX="5.25" PointY="3.0033268229166667" />
+        </AssociationConnector>
+        <AssociationConnector Association="AmazonCrawlerModel.FK_Ranking_Book" ManuallyRouted="false">
+          <ConnectorPoint PointX="2.25" PointY="4.0772509765625" />
+          <ConnectorPoint PointX="5.25" PointY="4.0772509765625" />
+        </AssociationConnector>
+        <AssociationConnector Association="AmazonCrawlerModel.FK_Review_Book" ManuallyRouted="false">
+          <ConnectorPoint PointX="2.25" PointY="7.0414737955729159" />
+          <ConnectorPoint PointX="5.25" PointY="7.0414737955729159" />
+        </AssociationConnector>
+        <EntityTypeShape EntityType="AmazonCrawlerModel.Reviewer" Width="1.5" PointX="7.375" PointY="0.875" Height="1.7566536458333317" />
+        <EntityTypeShape EntityType="AmazonCrawlerModel.ReviewerBadge" Width="1.5" PointX="9.625" PointY="1" Height="1.592306315104167" />
+        <AssociationConnector Association="AmazonCrawlerModel.FK_Review_Reviewer" >
+          <ConnectorPoint PointX="8.125" PointY="2.6316536458333317" />
+          <ConnectorPoint PointX="8.125" PointY="7.3250634765625" />
+          <ConnectorPoint PointX="6.75" PointY="7.3250634765625" />
+        </AssociationConnector>
+        <AssociationConnector Association="AmazonCrawlerModel.FK_ReviewerBadge_Reviewer" >
+          <ConnectorPoint PointX="8.875" PointY="1.7961531575520835" />
+          <ConnectorPoint PointX="9.625" PointY="1.7961531575520835" />
+        </AssociationConnector>
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>
